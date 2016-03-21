@@ -1,0 +1,25 @@
+{
+  "name": "broadcast-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "hls.js": "^0.5.15",
+    "express": "^4.13.4",
+    "body-parser": "^1.15.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrice727/broadcast-test.git"
+  },
+  "author": "adrice727@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/adrice727/broadcast-test/issues"
+  },
+  "homepage": "https://github.com/adrice727/broadcast-test#readme"
+}
