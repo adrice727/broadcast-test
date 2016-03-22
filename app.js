@@ -1,4 +1,10 @@
 'use strict';
+
+/*
+ * General Dependencies
+ */
+var axios = require('axios');
+
 /*
  * Express Dependencies
  */
@@ -6,7 +12,6 @@ var express = require('express');
 var app = express();
 var port = 8000;
 var bodyParser = require('body-parser');
-var axios = require('axios');
 
 app.use(bodyParser.json());
 
@@ -22,8 +27,9 @@ app.get('/', (req, res, next) => {
 /*
  * API
  */
-var apiKey = '';
-var apiSecret = '';
+var apiConfig = require('./config.json');
+let apiKey = apiConfig.apiKey;
+let apiSecret = apiConfig.apiSecret;
 app.get('/config', (req, res, next) => {
     res.json({
         apiKey,
@@ -60,8 +66,6 @@ app.get('/broadcast', (req, res, next) => {
     })
 
 });
-
-
 
 /*
  * Start it up
