@@ -4,8 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Broadcast Test</title>
-    <script src="library/hls.js"></script>
-    <script src="js/api.js"></script>
+
+    <!--Bower Components-->
+    <script src="bower_components/fetch/fetch.js" defer></script>
+    <script src="bower_components/es6-promise/es6-promise.min.js" defer></script>
+
+    <script src="library/hls.js" defer></script>
+    <script src="js/api.js" defer></script>
+    <script src="js/app.js" defer></script>
+
 </head>
 
 <body>
@@ -14,52 +21,6 @@
     <button id="stop" onclick="end()">End Broadcast</button>
     <video id="video"></video>
 
-    <script>
-        if (Hls.isSupported()) {
-
-            var start = () => {
-
-                const play = (videoData) => {
-
-                    let { broadcastId, broadcastUrl } = videoData;
-
-                    let video = document.getElementById('video');
-                    video.setAttribute('broadcast-id', videoData.broadcastId);
-                    let hls = new Hls();
-                    hls.loadSource(videoData.broadcastUrl);
-                    hls.attachMedia(video);
-                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                        video.play();
-                    });
-
-                };
-
-
-                /** URL should not be accessed until 50 seconds later, after the 
-                 * initiation of the HLS broadcast, due to the delay between the 
-                 * HLS broadcast and the live broadcast from the OpenTok session.
-                 */
-                const delay = 1000 * 55;
-
-                api.getBroadcastUrl()
-                    .then(videoData => {
-                        console.log('waiting to start', videoData);
-                        setTimeout(() => { play(videoData) }, delay);
-                    });
-            };
-
-            var end = (broadcastId) => {
-
-                broadcastId = broadcastId || document.getElementById('video').getAttribute('broadcast-id');
-                api.endBroadcast(broadcastId)
-                    .then((response) => {
-                        let video = document.getElementById('video');
-                        video.stop();
-                    });
-
-            };
-        }
-    </script>
 </body>
 
 </html>

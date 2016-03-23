@@ -1,4 +1,5 @@
 /*eslint-env es6 */
+'use strict';
 
 const api = (() => {
 
@@ -34,7 +35,8 @@ const api = (() => {
 
             fetch(request)
                 .then(response => {
-                    return response.json(); })
+                    return response.json();
+                })
                 .then(data => {
                     let broadcastEnded = { broadcastEnded: data.broadcastUrls === null };
                     !!data.error ? reject(data.error.data.message) : resolve(broadcastEnded);

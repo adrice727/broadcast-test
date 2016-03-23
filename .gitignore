@@ -1,3 +1,4 @@
 node_modules
 config.json
 .jsbeautifyrc
+public/bower_components

@@ -1,0 +1,23 @@
+{
+  "name": "broadcast-test",
+  "description": "",
+  "main": "app.js",
+  "authors": [
+    "adrice727@gmail.com"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/adrice727/broadcast-test",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/bower_components/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "es6-promise": "^3.2.1",
+    "fetch": "^0.11.0"
+  }
+}
