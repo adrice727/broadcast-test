@@ -11,7 +11,7 @@
 <body>
 
     <button id="start" onclick="start()">Start Broadcast</button>
-    <button id="stop" onclick="stop()">Stop Broadcast</button>
+    <button id="stop" onclick="end()">End Broadcast</button>
     <video id="video"></video>
 
     <script>
@@ -43,13 +43,19 @@
 
                 api.getBroadcastUrl()
                     .then(videoData => {
-                        console.log(videoData);
+                        console.log('waiting to start', videoData);
                         setTimeout(() => { play(videoData) }, delay);
                     });
             };
 
-            var stop = () => {
+            var end = (broadcastId) => {
 
+                broadcastId = broadcastId || document.getElementById('video').getAttribute('broadcast-id');
+                api.endBroadcast(broadcastId)
+                    .then((response) => {
+                        let video = document.getElementById('video');
+                        video.stop();
+                    });
 
             };
         }
