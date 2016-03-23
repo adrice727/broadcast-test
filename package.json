@@ -5,10 +5,12 @@
   "main": "app.js",
   "dependencies": {
     "axios": "^0.9.1",
+    "bluebird": "^3.3.4",
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
     "hanuman-js": "^0.4.1",
-    "hls.js": "^0.5.15"
+    "hls.js": "^0.5.15",
+    "redis": "^2.5.3"
   },
   "devDependencies": {},
   "scripts": {
