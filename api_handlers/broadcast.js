@@ -43,19 +43,38 @@ exports.getBroadcastUrl = (req, res, next) => {
     axios(requestConfig)
         .then(response => {
 
+
             let broadcastData = {
                 broadcastUrl: H.get(['data', 'broadcastUrls', 'hls'], response),
                 broadcastId: H.get(['data', 'id'], response)
             };
 
             client.hmset('broadcast', {
-                'url': broadcastData.broadcastUrl,
-                'id': broadcastData.broadcastId
+                'broadcastId': broadcastData.broadcastUrl,
+                'broadcastUrl': broadcastData.broadcastId
             });
 
             res.json(broadcastData);
         })
-        .catch(error => { res.status(500).json({ error }); });
+        .catch(error => {
+
+            // Need to check the error to see if the broadcast has already started
+            // Do we get a broadcast id back here, or do we need to retrieve it from redis?
+            if (error.status === 409) {
+                console.log('broadcast already started - fetching data . . .');
+                client.hgetallAsync('broadcast')
+                    .then(broadcastData => {
+                        console.log('returned from redis', broadcastData);
+                        res.json(broadcastData);
+                    })
+                    .catch(error => {
+                        console.log('Ruh roh', error);
+                    });
+
+            } else {
+                res.status(500).json({ error });
+            }
+        });
 };
 
 exports.endBroadcast = (req, res, next) => {
@@ -76,7 +95,7 @@ exports.endBroadcast = (req, res, next) => {
 
     // If the client doesn't send the id, retrieve it from redis
     if (!broadcastId) {
-        client.hgetall('broadcast')
+        client.hgetallAsync('broadcast')
             .then(broadcastData => {
                 broadcastId = broadcastData.broadcastId;
                 sendEndRequest();
