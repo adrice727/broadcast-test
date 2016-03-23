@@ -10,30 +10,48 @@
 
 <body>
 
+    <button id="start" onclick="start()">Start Broadcast</button>
+    <button id="stop" onclick="stop()">Stop Broadcast</button>
     <video id="video"></video>
-    
+
     <script>
         if (Hls.isSupported()) {
 
-            // api.getBroadcastUrl()
-            //     .then(url => {
-            //         broadcast(url);
-            //     });
+            var start = () => {
+
+                const play = (videoData) => {
+
+                    let { broadcastId, broadcastUrl } = videoData;
+
+                    let video = document.getElementById('video');
+                    video.setAttribute('broadcast-id', videoData.broadcastId);
+                    let hls = new Hls();
+                    hls.loadSource(videoData.broadcastUrl);
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        video.play();
+                    });
+
+                };
 
 
-            const broadcast = (url) => {
+                /** URL should not be accessed until 50 seconds later, after the 
+                 * initiation of the HLS broadcast, due to the delay between the 
+                 * HLS broadcast and the live broadcast from the OpenTok session.
+                 */
+                const delay = 1000 * 55;
 
-                let video = document.getElementById('video');
-                let hls = new Hls();
-
-                hls.loadSource(url);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    video.play();
-                });
-
+                api.getBroadcastUrl()
+                    .then(videoData => {
+                        console.log(videoData);
+                        setTimeout(() => { play(videoData) }, delay);
+                    });
             };
 
+            var stop = () => {
+
+
+            };
         }
     </script>
 </body>
