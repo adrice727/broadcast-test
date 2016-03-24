@@ -50,8 +50,8 @@ exports.getBroadcastUrl = (req, res, next) => {
             };
 
             client.hmset('broadcast', {
-                'broadcastId': broadcastData.broadcastUrl,
-                'broadcastUrl': broadcastData.broadcastId
+                'broadcastId': broadcastData.broadcastId,
+                'broadcastUrl': broadcastData.broadcastUrl
             });
 
             res.json(broadcastData);
@@ -64,7 +64,6 @@ exports.getBroadcastUrl = (req, res, next) => {
                 console.log('broadcast already started - fetching data . . .');
                 client.hgetallAsync('broadcast')
                     .then(broadcastData => {
-                        console.log('returned from redis', broadcastData);
                         res.json(broadcastData);
                     })
                     .catch(error => {
