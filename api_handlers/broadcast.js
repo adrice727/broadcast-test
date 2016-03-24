@@ -59,7 +59,7 @@ exports.getBroadcastUrl = (req, res, next) => {
         .catch(error => {
 
             // Need to check the error to see if the broadcast has already started
-            // Do we get a broadcast id back here, or do we need to retrieve it from redis?
+            // If it already started, retrieve the broadcast info from redis
             if (error.status === 409) {
                 console.log('broadcast already started - fetching data . . .');
                 client.hgetallAsync('broadcast')
@@ -88,7 +88,10 @@ exports.endBroadcast = (req, res, next) => {
 
     let sendEndRequest = () => {
         axios(requestConfig)
-            .then(response => { res.json(H.pick(['broadcastUrls'], response.data)); })
+            .then(response => {
+                client.del('broadcast');
+                res.json(H.pick(['broadcastUrls'], response.data));
+            })
             .catch(error => { res.status(500).json({ error }); });
     };
 
