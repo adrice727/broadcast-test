@@ -12,7 +12,7 @@ const api = (() => {
                     return response.json();
                 })
                 .then(data => {
-                    !!data.error ? reject(data.error.data.message) : resolve(data);
+                    !!H.get('error', data) ? reject(data.error.data.message) : resolve(data);
                 })
                 .catch(function(err) {
                     reject(err);
@@ -39,7 +39,7 @@ const api = (() => {
                 })
                 .then(data => {
                     let broadcastEnded = { broadcastEnded: data.broadcastUrls === null };
-                    !!data.error ? reject(data.error.data.message) : resolve(broadcastEnded);
+                    !!H.get('error', data) ? reject(data.error.data.message) : resolve(broadcastEnded);
                 })
                 .catch(function(err) { reject(err); });
         });
