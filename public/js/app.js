@@ -40,7 +40,9 @@ if (Hls.isSupported()) {
         api.endBroadcast(broadcastId)
             .then((response) => {
                 let video = document.getElementById('video');
-                video.stop();
+                video.pause();
+                video.removeAttribute('src');
+                video.removeAttribute('broadcast-id');
             });
 
     };
