@@ -15,6 +15,7 @@ const sessionId = apiConfig.sessionId;
 /** Redis Config */
 const redis = require('redis');
 const client = redis.createClient();
+// Enable 'Async' methods
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
@@ -43,25 +44,34 @@ exports.getBroadcastUrl = (req, res, next) => {
     axios(requestConfig)
         .then(response => {
 
-
             let broadcastData = {
                 broadcastUrl: H.get(['data', 'broadcastUrls', 'hls'], response),
                 broadcastId: H.get(['data', 'id'], response)
             };
 
-            client.hmset('broadcast', {
+            console.log('Broadcast data from OT: ', broadcastData);
+
+            /** We'll need to associate a broadcast with a specific session.  For now, jsut
+             *  storing the most recent broadcast. */
+            client.hmsetAsync('broadcast', {
                 'broadcastId': broadcastData.broadcastId,
                 'broadcastUrl': broadcastData.broadcastUrl
+            }).then(res => {
+                console.log('Broadcast data saved to redis.', res);
+            }).catch(error => {
+                console.log('Ruh roh', error);
             });
 
             res.json(broadcastData);
         })
         .catch(error => {
 
-            // Need to check the error to see if the broadcast has already started
-            // If it already started, retrieve the broadcast info from redis
+            /** Need to check the error to see if the broadcast has already started
+             * If so, retrieve the broadcast info from redis.
+             */
+            console.log('error fetching url', error);
             if (error.status === 409) {
-                console.log('broadcast already started - fetching data . . .');
+                console.log('Broadcast already started.  Fetching data from redis . . .');
                 client.hgetallAsync('broadcast')
                     .then(broadcastData => {
                         res.json(broadcastData);
@@ -80,14 +90,16 @@ exports.endBroadcast = (req, res, next) => {
 
     let broadcastId = H.get(['body', 'broadcastId'], req);
 
-    let requestConfig = {
-        method: 'post',
-        headers,
-        url: stopBroadcastURL(broadcastId)
+    let requestConfig = () => {
+        return {
+            method: 'post',
+            headers,
+            url: stopBroadcastURL(broadcastId)
+        };
     };
 
     let sendEndRequest = () => {
-        axios(requestConfig)
+        axios(requestConfig())
             .then(response => {
                 client.del('broadcast');
                 res.json(H.pick(['broadcastUrls'], response.data));
@@ -99,8 +111,11 @@ exports.endBroadcast = (req, res, next) => {
     if (!broadcastId) {
         client.hgetallAsync('broadcast')
             .then(broadcastData => {
-                broadcastId = broadcastData.broadcastId;
-                sendEndRequest();
+                broadcastId = H.get('broadcastId', broadcastData);
+                /** If we don't get anything back from redis, the broadcast has 
+                 * already ended. 
+                 * */
+                !!broadcastId ? sendEndRequest() : res.json({ broadcastUrls: null });
             });
     } else {
         sendEndRequest();
